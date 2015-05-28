@@ -112,3 +112,14 @@ If you happen to have dynamic routes or dynamic translations that you need in yo
             
         // ...
     }
+    
+### Displaying in twig
+
+Simply call as following:
+
+    // someTemplate.html.twig
+    // ...
+    
+    {{ breadcrumbs() }}
+    
+    // ...
