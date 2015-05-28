@@ -4,6 +4,7 @@ namespace Thormeier\BreadcrumbBundle\Provider;
 
 use Symfony\Bundle\FrameworkBundle\Routing\RouterInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
@@ -44,7 +45,7 @@ class BreadcrumbProvider
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        if ($event->isMasterRequest()) {
+        if ($event->getRequestType() === HttpKernelInterface::MASTER_REQUEST) {
             $this->currentRoute = $event->getRequest()->get('_route');
         }
     }

@@ -4,6 +4,7 @@ namespace Thormeier\BreadcrumbBundle\Tests\Provider;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
@@ -39,14 +40,14 @@ class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $this->responseEvent = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
             ->disableOriginalConstructor()
-            ->setMethods(array('isMasterRequest', 'getRequest'))
+            ->setMethods(array('getRequestType', 'getRequest'))
             ->getMock();
         $this->responseEvent->expects($this->any())
             ->method('getRequest')
             ->will($this->returnValue($this->request));
         $this->responseEvent->expects($this->any())
-            ->method('isMasterRequest')
-            ->will($this->returnValue(true));
+            ->method('getRequestType')
+            ->will($this->returnValue(HttpKernelInterface::MASTER_REQUEST));
 
         $router = $this->getMockedRouter();
 
