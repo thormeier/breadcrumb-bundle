@@ -100,4 +100,19 @@ class BreadcrumbCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($breadcrumbB, $collection->getBreadcrumbByRoute('baz'));
         $this->assertEquals($breadcrumbA, $collection->getBreadcrumbByRoute('bar'));
     }
+
+    /**
+     * Test throwing of exception if a route doesn't exist
+     */
+    public function testAddAfterBreadcrumbExceptionException()
+    {
+        $breadcrumbA = new Breadcrumb('foo', 'bar');
+        $breadcrumbB = new Breadcrumb('bar', 'baz');
+
+        $collection = new BreadcrumbCollection();
+
+        $this->setExpectedException('\InvalidArgumentException');
+
+        $collection->addBreadcrumbAfterCrumb($breadcrumbA, $breadcrumbB);
+    }
 }
