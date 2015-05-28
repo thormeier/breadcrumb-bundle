@@ -161,10 +161,10 @@ class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
         $routeCollection->add('c', $routeC);
         $routeCollection->add('d', $routeD);
 
-        $router = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\RouterInterface')
+        $router = $this->getMockBuilder('\Symfony\Component\Routing\RouterInterface')
             ->disableOriginalConstructor()
             ->setMethods(array('addExpressionLanguageProvider', 'getRouteCollection', 'getOriginalRouteCollection'))
-            ->getMock();
+            ->getMockForAbstractClass();
         $router->expects($this->any())
             ->method('getRouteCollection')
             ->will($this->returnValue($routeCollection));

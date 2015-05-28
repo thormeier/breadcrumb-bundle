@@ -2,11 +2,11 @@
 
 namespace Thormeier\BreadcrumbBundle\Provider;
 
-use Symfony\Bundle\FrameworkBundle\Routing\RouterInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\RouterInterface;
 use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
 use Thormeier\BreadcrumbBundle\Model\BreadcrumbCollection;
 
@@ -16,7 +16,7 @@ use Thormeier\BreadcrumbBundle\Model\BreadcrumbCollection;
 class BreadcrumbProvider
 {
     /**
-     * @var Router
+     * @var RouterInterface
      */
     private $router;
 
@@ -31,7 +31,7 @@ class BreadcrumbProvider
     private $breadcrumbs = null;
 
     /**
-     * @param Router $router
+     * @param RouterInterface $router
      */
     public function __construct(RouterInterface $router)
     {
