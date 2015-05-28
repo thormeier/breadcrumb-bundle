@@ -1,7 +1,7 @@
 BreadcrumbBundle
 ================
 
-[![Build Status](https://travis-ci.org/thormeier/breadcrumb-bundle.png?branch=master)](https://travis-ci.org/thormeier/MobileDetectLightBundle)
+[![Build Status](https://travis-ci.org/thormeier/breadcrumb-bundle.png?branch=master)](https://travis-ci.org/thormeier/breadcrumb-bundle)
 
 ## Introduction
 
