@@ -101,7 +101,7 @@ If you happen to have dynamic routes or dynamic translations that you need in yo
     
         // ...
     
-        $breadcrumb = $this->get('thormeier.breadcrumb.breadcrumb_provider')
+        $this->get('thormeier.breadcrumb.breadcrumb_provider')
             ->getBreadcrumbByRoute('acme_demo_product_detail')
             ->setRouteParams(array(
                 'id' => $product->getId(),
