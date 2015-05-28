@@ -39,6 +39,7 @@ class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $this->responseEvent = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
             ->disableOriginalConstructor()
+            ->setMethods(array('isMasterRequest', 'getRequest'))
             ->getMock();
         $this->responseEvent->expects($this->any())
             ->method('getRequest')
