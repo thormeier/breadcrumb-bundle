@@ -1,0 +1,26 @@
+{
+    "name": "thormeier/breadcrumb-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony2 bundle for easy setup of breadcrumbs",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pascal Thormeier",
+            "email": "pascal.thormeier@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "Thormeier\\BreadcrumbBundle": "" }
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/framework-bundle": "2.*"
+    },
+    "require-dev": {
+        "twig/twig": "1.15.*@dev",
+        "phpunit/phpunit": "4.*"
+    },
+    "target-dir": "Thormeier/BreadcrumbBundle",
+    "minimum-stability": "dev"
+}
