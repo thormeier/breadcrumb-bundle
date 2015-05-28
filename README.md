@@ -49,7 +49,6 @@ The template defaults to a very basic one, providing a `<ul>` with `<li>` and `<
 
 A breadcrumb tree is created by trhe fields `label` and `parent_route` in the `defaults` of a route. Basic tree example:
 
-
     # routing.yml
     
     acme_demo_home:
@@ -69,19 +68,19 @@ A breadcrumb tree is created by trhe fields `label` and `parent_route` in the `d
             label: 'Our Catalogue'
             parent_route: acme_demo_home
     
-    acme_demo_catalogue:
+    acme_demo_catalogue_categories:
         path: /catalogue/categories
         defaults:
             label: 'All categories'
-            parent_route: acme_demo_home
+            parent_route: acme_demo_catalogue
 
 Would result in a breadcrumb tree like:
 
     acme_demo_home
         |- acme_demo_contact
         `- acme_demo_catalogue
-           `- acme_demo_catalogue
-           
+           `- acme_demo_catalogue_categories:
+
 If the current route is `acme_demo_catalogue`, the breadcrumbs would for instance show the following:
 
     Home > Our Catalogue
