@@ -100,10 +100,10 @@ class BreadcrumbCollection
      *
      * @return mixed
      */
-    private function getBreadcrumbPosition(Breadcrumb $breadcrumb, $dump = false)
+    private function getBreadcrumbPosition(Breadcrumb $breadcrumb)
     {
         $position = array_search($breadcrumb, $this->breadcrumbs);
-        if ($dump) { var_dump($position); exit; }
+
         if (false === $position) {
             throw new \InvalidArgumentException(sprintf(
                 'Breadcrumb for route "%s" with label "%s" not found',
