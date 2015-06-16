@@ -35,19 +35,13 @@ In your config.yml:
     # config.yml
     thormeier_breadcrumb: ~
 
-If you want to change the template used:
-
-    # config.yml
-    thormeier_breadcrumb:
-        template: 'my twig template path'
-
 The template defaults to a very basic one, providing a `<ul>` with `<li>` and `<a>` for every breadcrumb.
 
 ## Usage
 
 ### Basic
 
-A breadcrumb tree is created by trhe fields `label` and `parent_route` in the `defaults` of a route. Basic tree example:
+A breadcrumb tree is created by the fields `label` and `parent_route` in the `defaults` of a route. Basic tree example:
 
     # routing.yml
     
@@ -84,7 +78,7 @@ Would result in a breadcrumb tree like:
 If the current route is `acme_demo_catalogue`, the breadcrumbs would for instance show the following:
 
     Home > Our Catalogue
-    
+
 ### Dynamic routes
 
 If you happen to have dynamic routes or dynamic translations that you need in your breadcrumbs, you can set parameters for both directly on the `Breadcrumb` object, for instance:
@@ -111,14 +105,40 @@ If you happen to have dynamic routes or dynamic translations that you need in yo
             
         // ...
     }
-    
+
 ### Displaying in twig
 
 Simply call as following:
 
-    // someTemplate.html.twig
-    // ...
+    {# someTemplate.html.twig #}
+    {# ... #}
     
     {{ breadcrumbs() }}
     
-    // ...
+    {# ... #}
+
+### Replacing the default template
+
+If you want to use a custom template, add the following to your config.yml
+
+    # config.yml
+    thormeier_breadcrumb:
+        template: 'my twig template path'
+
+Your custom breadcrumb template receives a variable called `breadcrumbs` that is a collection that represents your breadcrumbs, ordered by first to last.
+
+A single `breadcrumb` has the fields `route`, `routeParams`, `label` and `labelParams`. `route` and `routeParams` are used to generate a path in twig, i.e. `path(breadcrumb.route, breadcrumb.routeParams)`, whereas `label` and `labelParams` are used to generate the text for the breadcrumb, i.e. `{{ (breadcrumb.label)|trans(breadcrumb.labelParams) }}`
+
+Your custom template might look something like this:
+
+    {# myBreadcrumbs.html.twig #}
+
+    <div>
+        {% for breadcrumb in breadcrumbs %}
+            <a href="{{ path(breadcrumb.route, breadcrumb.routeParams) }}">
+                {{ (breadcrumb.label)|trans(breadcrumb.labelParams) }}
+            </a>
+        {% endfor %}
+    </div>
+
+Have a look at `Resources/views/breadcrumbs.html.twig` to see the default implementation

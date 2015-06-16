@@ -2,7 +2,8 @@
     {% for crumb in breadcrumbs %}
         {% set crumbPath = path(crumb.route, crumb.routeParameters) %}
         {% set crumbText = crumb.label|trans(crumb.labelParameters) %}
-    <li{% if crumb.route == app.request.get('route') %} class="current"{% endif %}>
+
+    <li{% if crumb.route == app.request.get('_route') %} class="current"{% endif %}>
         <a href="{{ crumbPath }}" title="{{ crumbText }}">{{ crumbText }}</a>
     </li>
     {% endfor %}
