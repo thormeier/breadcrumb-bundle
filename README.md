@@ -6,13 +6,13 @@ BreadcrumbBundle
 ## Introduction
 
 This Symfony2 bundle provides easy integration of breadcrumbs in your TWIG templates via route config.
-This bundle is heavily inspired by https://github.com/xi-project/xi-bundle-breadcrumbs
+This bundle is heavily inspired by the inactive https://github.com/xi-project/xi-bundle-breadcrumbs
 
 ## Installation
 
 ### Step 1: Composer require
 
-    $ php composer.phar require "thormeier/breadcrumb-bundle":"1.0.*"
+    $ php composer.phar require "thormeier/breadcrumb-bundle"
 
 ### Step2: Enable the bundle in the kernel
 
@@ -47,26 +47,30 @@ A breadcrumb tree is created by the fields `label` and `parent_route` in the `de
     
     acme_demo_home:
         path: /
-        defaults:
-            label: Home
+        options:
+            breadcrumb:
+                label: Home
     
     acme_demo_contact:
         path: /contact
-        defaults:
-            label: Contact
-            parent_route: acme_demo_home
+        options:
+            breadcrumb:
+                label: Contact
+                parent_route: acme_demo_home
     
     acme_demo_catalogue:
         path: /catalogue
-        defaults:
-            label: 'Our Catalogue'
-            parent_route: acme_demo_home
+        options:
+            breadcrumb:
+                label: 'Our Catalogue'
+                parent_route: acme_demo_home
     
     acme_demo_catalogue_categories:
         path: /catalogue/categories
-        defaults:
-            label: 'All categories'
-            parent_route: acme_demo_catalogue
+        options:
+            breadcrumb:
+                label: 'All categories'
+                parent_route: acme_demo_catalogue
 
 Would result in a breadcrumb tree like:
 
@@ -142,3 +146,19 @@ Your custom template might look something like this:
     </div>
 
 Have a look at `Resources/views/breadcrumbs.html.twig` to see the default implementation
+
+### Customize implementations
+
+The model class and its collection can be replaced by own implementations, that implement the `Thormeier\BreadcrumbBundle\Model\BreadcrumbInterface` and `Thormeier\BreadcrumbBundle\Model\BreadcrumbCollectionInterface`:
+
+    # config.yml
+    thormeier_breadcrumb:
+        model_class: Acme\Breadcrumbs\Model\MyModel
+        collection_class: Acme\Breadcrumbs\Model\MyCollection
+
+The provider service ID can be replaced by setting the parameter `provider_service_id`
+
+    # config.yml
+    thormeier_breadcrumb:
+        provider_service_id: acme.breadcrumbs.my_provider
+

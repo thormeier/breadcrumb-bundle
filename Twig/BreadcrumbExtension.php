@@ -2,7 +2,7 @@
 
 namespace Thormeier\BreadcrumbBundle\Twig;
 
-use Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider;
+use Thormeier\BreadcrumbBundle\Provider\BreadcrumbProviderInterface;
 
 /**
  * Twig extension for breadcrumbs: Render a given template
@@ -10,7 +10,7 @@ use Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider;
 class BreadcrumbExtension extends \Twig_Extension
 {
     /**
-     * @var BreadcrumbProvider
+     * @var BreadcrumbProviderInterface
      */
     private $breadcrumbProvider;
 
@@ -20,9 +20,9 @@ class BreadcrumbExtension extends \Twig_Extension
     private $template;
 
     /**
-     * @param BreadcrumbProvider $breadcrumbProvider
+     * @param BreadcrumbProviderInterface $breadcrumbProvider
      */
-    public function __construct(BreadcrumbProvider $breadcrumbProvider, $template)
+    public function __construct(BreadcrumbProviderInterface $breadcrumbProvider, $template)
     {
         $this->breadcrumbProvider = $breadcrumbProvider;
         $this->template = $template;

@@ -5,7 +5,7 @@ namespace Thormeier\BreadcrumbBundle\Model;
 /**
  * Single breadcrumb model
  */
-class Breadcrumb
+class Breadcrumb implements BreadcrumbInterface
 {
     /**
      * @var string
@@ -46,9 +46,9 @@ class Breadcrumb
      *
      * @return string
      */
-    public function getLabel()
+    public function getRoute()
     {
-        return $this->label;
+        return $this->route;
     }
 
     /**
@@ -56,9 +56,9 @@ class Breadcrumb
      *
      * @return string
      */
-    public function getRoute()
+    public function getLabel()
     {
-        return $this->route;
+        return $this->label;
     }
 
     /**

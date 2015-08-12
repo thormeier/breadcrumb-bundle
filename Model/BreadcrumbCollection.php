@@ -5,19 +5,19 @@ namespace Thormeier\BreadcrumbBundle\Model;
 /**
  * Breadcrumb collection that holds all breadcrumbs and allows special operations on it
  */
-class BreadcrumbCollection
+class BreadcrumbCollection implements BreadcrumbCollectionInterface
 {
     /**
-     * @var Breadcrumb[] Array of breadcrumbs
+     * @var BreadcrumbInterface[] Array of breadcrumbs
      */
     private $breadcrumbs = array();
 
     /**
-     * @param Breadcrumb $breadcrumb
+     * @param BreadcrumbInterface $breadcrumb
      *
      * @return $this
      */
-    public function addBreadcrumb(Breadcrumb $breadcrumb)
+    public function addBreadcrumb(BreadcrumbInterface $breadcrumb)
     {
         $this->breadcrumbs[] = $breadcrumb;
 
@@ -25,34 +25,39 @@ class BreadcrumbCollection
     }
 
     /**
-     * @param Breadcrumb $newBreadcrumb
-     * @param Breadcrumb $positionBreadcrumb
+     * @param BreadcrumbInterface $newBreadcrumb
+     * @param BreadcrumbInterface $positionBreadcrumb
      *
      * @return $this
      */
-    public function addBreadcrumbBeforeCrumb(Breadcrumb $newBreadcrumb, Breadcrumb $positionBreadcrumb)
+    public function addBreadcrumbBeforeCrumb(BreadcrumbInterface $newBreadcrumb, BreadcrumbInterface $positionBreadcrumb)
     {
         return $this->addBreadcrumbAtPosition($newBreadcrumb, ($this->getBreadcrumbPosition($positionBreadcrumb)));
     }
 
     /**
-     * @param Breadcrumb $newBreadcrumb
-     * @param Breadcrumb $positionBreadcrumb
+     * @param BreadcrumbInterface $newBreadcrumb
+     * @param BreadcrumbInterface $positionBreadcrumb
      *
      * @return $this
      */
-    public function addBreadcrumbAfterCrumb(Breadcrumb $newBreadcrumb, Breadcrumb $positionBreadcrumb)
+    public function addBreadcrumbAfterCrumb(BreadcrumbInterface $newBreadcrumb, BreadcrumbInterface $positionBreadcrumb)
     {
         return $this->addBreadcrumbAtPosition($newBreadcrumb, ($this->getBreadcrumbPosition($positionBreadcrumb) + 1));
     }
 
     /**
-     * @param Breadcrumb $breadcrumb
-     * @param int        $position
+     * If $position is positive then the start of removed
+     * portion is at that offset from the beginning of the
+     * breadcrumbs. If $position is negative then it starts that
+     * far from the end of the breadcrumbs.
+     *
+     * @param BreadcrumbInterface $breadcrumb
+     * @param int                 $position
      *
      * @return $this
      */
-    public function addBreadcrumbAtPosition(Breadcrumb $breadcrumb, $position)
+    public function addBreadcrumbAtPosition(BreadcrumbInterface $breadcrumb, $position)
     {
         array_splice($this->breadcrumbs, $position, 0, array($breadcrumb));
 
@@ -64,7 +69,7 @@ class BreadcrumbCollection
      *
      * @return $this
      */
-    public function addBreadcrumbToStart(Breadcrumb $breadcrumb)
+    public function addBreadcrumbToStart(BreadcrumbInterface $breadcrumb)
     {
         array_unshift($this->breadcrumbs, $breadcrumb);
 
@@ -72,7 +77,7 @@ class BreadcrumbCollection
     }
 
     /**
-     * @return Breadcrumb[]
+     * @return BreadcrumbInterface[]
      */
     public function getAll()
     {
@@ -80,9 +85,11 @@ class BreadcrumbCollection
     }
 
     /**
+     * Get the first breadcrumb entry for $route from the breadcrumb tree for the current route.
+     *
      * @param string $route
      *
-     * @return null|Breadcrumb
+     * @return null|BreadcrumbInterface
      */
     public function getBreadcrumbByRoute($route)
     {
@@ -96,11 +103,11 @@ class BreadcrumbCollection
     }
 
     /**
-     * @param Breadcrumb $breadcrumb
+     * @param BreadcrumbInterface $breadcrumb
      *
      * @return mixed
      */
-    private function getBreadcrumbPosition(Breadcrumb $breadcrumb)
+    private function getBreadcrumbPosition(BreadcrumbInterface $breadcrumb)
     {
         $position = array_search($breadcrumb, $this->breadcrumbs);
 

@@ -2,10 +2,13 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
     <services>
 
-        <service id="thormeier.breadcrumb.breadcrumb_provider" class="Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider">
+        <service id="thormeier.breadcrumb.breadcrumb_provider.default" class="Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider">
             <argument type="service" id="router" />
+            <argument>%thormeier.breadcrumb.class.model%</argument>
+            <argument>%thormeier.breadcrumb.class.model_collection%</argument>
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
         </service>
 

@@ -21,6 +21,13 @@
         "twig/twig": "1.15.*@dev",
         "phpunit/phpunit": "4.*"
     },
+
     "target-dir": "Thormeier/BreadcrumbBundle",
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0-dev"
+        }
+    }
 }

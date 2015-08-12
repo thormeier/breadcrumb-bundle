@@ -7,6 +7,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\RouterInterface;
 use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
 use Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider;
 
@@ -15,6 +16,10 @@ use Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider;
  */
 class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
 {
+    const MODEL_CLASS = 'Thormeier\BreadcrumbBundle\Model\Breadcrumb';
+
+    const COLLECTION_CLASS = 'Thormeier\BreadcrumbBundle\Model\BreadcrumbCollection';
+
     /**
      * @var GetResponseEvent
      */
@@ -49,9 +54,10 @@ class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
             ->method('getRequestType')
             ->will($this->returnValue(HttpKernelInterface::MASTER_REQUEST));
 
+        /** @var RouterInterface $router */
         $router = $this->getMockedRouter();
 
-        $this->provider = new BreadcrumbProvider($router);
+        $this->provider = new BreadcrumbProvider($router, self::MODEL_CLASS, self::COLLECTION_CLASS);
     }
 
     /**
@@ -140,20 +146,20 @@ class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
      */
     private function getMockedRouter()
     {
-        $routeA = new Route('a', array(
+        $routeA = new Route('a', array(), array(), array('breadcrumb' => array(
             'label' => 'a',
-        ));
-        $routeB = new Route('b', array(
+        )));
+        $routeB = new Route('b', array(), array(), array('breadcrumb' => array(
             'label' => 'b',
             'parent_route' => 'a',
-        ));
-        $routeC = new Route('c', array(
+        )));
+        $routeC = new Route('c', array(), array(), array('breadcrumb' => array(
             'label' => 'c',
             'parent_route' => 'a',
-        ));
-        $routeD = new Route('d', array(
+        )));
+        $routeD = new Route('d', array(), array(), array('breadcrumb' => array(
             'label' => 'd',
-        ));
+        )));
 
         $routeCollection = new RouteCollection();
         $routeCollection->add('a', $routeA);

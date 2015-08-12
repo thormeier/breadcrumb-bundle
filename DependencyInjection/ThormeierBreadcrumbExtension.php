@@ -24,8 +24,12 @@ class ThormeierBreadcrumbExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('thormeier_breadcrumb.template', $config['template']);
+        $container->setParameter('thormeier_breadcrumb.model_class', $config['model_class']);
+        $container->setParameter('thormeier_breadcrumb.collection_class', $config['collection_class']);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
+        $container->setAlias('thormeier.breadcrumb.breadcrumb_provider', $config['provider_service_id']);
     }
 }
