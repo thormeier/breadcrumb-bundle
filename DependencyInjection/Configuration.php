@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('template')->defaultValue('@ThormeierBreadcrumb/breadcrumbs.html.twig')->end()
                 ->scalarNode('model_class')->defaultValue('Thormeier\BreadcrumbBundle\Model\Breadcrumb')->end()
                 ->scalarNode('collection_class')->defaultValue('Thormeier\BreadcrumbBundle\Model\BreadcrumbCollection')->end()
-                ->scalarNode('provider_service_id')->defaultValue('thormeier.breadcrumb.breadcrumb_provider.default')->end()
+                ->scalarNode('provider_service_id')->defaultValue('thormeier_breadcrumb.breadcrumb_provider.default')->end()
             ->end()
         ;
 
