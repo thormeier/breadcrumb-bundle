@@ -5,15 +5,15 @@
 
     <services>
 
-        <service id="thormeier.breadcrumb.breadcrumb_provider.default" class="Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider">
+        <service id="thormeier_breadcrumb.breadcrumb_provider.default" class="Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider">
             <argument type="service" id="router" />
-            <argument>%thormeier.breadcrumb.class.model%</argument>
-            <argument>%thormeier.breadcrumb.class.model_collection%</argument>
+            <argument>%thormeier_breadcrumb.class.model%</argument>
+            <argument>%thormeier_breadcrumb.class.collection%</argument>
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
         </service>
 
         <service id="thormeier.breadcrumb.breadcrumb_extension" class="Thormeier\BreadcrumbBundle\Twig\BreadcrumbExtension">
-            <argument type="service" id="thormeier.breadcrumb.breadcrumb_provider"/>
+            <argument type="service" id="thormeier_breadcrumb.breadcrumb_provider"/>
             <argument>%thormeier_breadcrumb.template%</argument>
             <tag name="twig.extension"/>
         </service>
