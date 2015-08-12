@@ -11,7 +11,7 @@
         }
     ],
     "autoload": {
-        "psr-0": { "Thormeier\\BreadcrumbBundle": "" }
+        "psr-4": { "Thormeier\\BreadcrumbBundle\\": "" }
     },
     "require": {
         "php": ">=5.3.3",
@@ -21,8 +21,9 @@
         "twig/twig": "1.15.*@dev",
         "phpunit/phpunit": "4.*"
     },
-
-    "target-dir": "Thormeier/BreadcrumbBundle",
+    "suggest": {
+        "twig/twig": "to render breadcrumbs with a twig template"
+    },
     "minimum-stability": "dev",
 
     "extra": {
