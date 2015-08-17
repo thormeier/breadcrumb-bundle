@@ -20,9 +20,11 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     private $router;
 
     /**
+     * Route name of the current request.
+     *
      * @var string
      */
-    private $currentRoute;
+    private $currentRouteName;
 
     /**
      * @var BreadcrumbCollectionInterface
@@ -59,7 +61,7 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     public function onKernelRequest(GetResponseEvent $event)
     {
         if ($event->getRequestType() === HttpKernelInterface::MASTER_REQUEST) {
-            $this->currentRoute = $event->getRequest()->get('_route');
+            $this->currentRouteName = $event->getRequest()->get('_route');
         }
     }
 
@@ -69,14 +71,16 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     public function getBreadcrumbs()
     {
         if (null === $this->breadcrumbs) {
+            $parentCollection = $this->router->getRouteCollection();
+
             // Support for JMS i18n router
             if (method_exists($this->router, 'getOriginalRouteCollection')) {
                 $collection = $this->router->getOriginalRouteCollection();
             } else {
-                $collection = $this->router->getRouteCollection();
+                $collection = $parentCollection;
             }
 
-            $this->breadcrumbs = $this->createBreadcrumbsFromRoutes($collection);
+            $this->breadcrumbs = $this->createBreadcrumbsFromRoutes($collection, $parentCollection);
         }
 
         return $this->breadcrumbs;
@@ -100,38 +104,50 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
      * Creates an array of breadcrumbs from a given RouteCollection
      *
      * @param RouteCollection $routes
+     * @param RouteCollection $parentRoutes In the case of JMS i18n router, this collection is different.
      *
      * @return BreadcrumbCollectionInterface
      */
-    private function createBreadcrumbsFromRoutes(RouteCollection $routes)
+    private function createBreadcrumbsFromRoutes(RouteCollection $routes, RouteCollection $parentRoutes)
     {
         /** @var BreadcrumbCollectionInterface $breadcrumbs */
         $breadcrumbs = new $this->collectionClass();
 
-        $currentRoute = $routes->get($this->currentRoute);
-        $currentRouteName = $this->currentRoute;
+        $route = $routes->get($this->currentRouteName);
+        if (!$route) {
+            // we did not find the route of this request. play it safe
+            return $breadcrumbs;
+        }
+        $routeName = $this->currentRouteName;
 
-        if (false === $currentRoute->hasOption('breadcrumb')) {
+        if (false === $route->hasOption('breadcrumb')) {
             return $breadcrumbs;
         }
 
         do {
-            $options = $currentRoute->getOption('breadcrumb');
+            $options = $route->getOption('breadcrumb');
 
             if (null === $options || false === isset($options['label'])) {
                 throw new \LogicException(sprintf(
                     'Routes used as parent routes need to be configured as breadcrumbs themselves. Associated route: "%s"',
-                    $currentRouteName
+                    $routeName
                 ));
             }
 
-            $breadcrumbs->addBreadcrumbToStart(new $this->modelClass($options['label'], $currentRouteName));
+            $breadcrumbs->addBreadcrumbToStart(new $this->modelClass($options['label'], $routeName));
 
-            $parentRoute = isset($options['parent_route']) ? $options['parent_route'] : null;
+            $parentRouteName = isset($options['parent_route']) ? $options['parent_route'] : null;
 
-            $currentRoute = $routes->get($parentRoute);
-            $currentRouteName = $parentRoute;
-        } while (null !== $parentRoute);
+            $route = $parentRoutes->get($parentRouteName);
+            if (null !== $parentRouteName && !$route) {
+                throw new \LogicException(sprintf(
+                    'Parent route "%s" specified on route "%s" not found',
+                    $parentRouteName,
+                    $routeName
+                ));
+            }
+            $routeName = $parentRouteName;
+        } while (null !== $parentRouteName);
 
         return $breadcrumbs;
     }
