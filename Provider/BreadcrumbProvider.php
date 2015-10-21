@@ -71,16 +71,14 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     public function getBreadcrumbs()
     {
         if (null === $this->breadcrumbs) {
-            $parentCollection = $this->router->getRouteCollection();
-
             // Support for JMS i18n router
             if (method_exists($this->router, 'getOriginalRouteCollection')) {
                 $collection = $this->router->getOriginalRouteCollection();
             } else {
-                $collection = $parentCollection;
+                $collection = $this->router->getRouteCollection();
             }
 
-            $this->breadcrumbs = $this->createBreadcrumbsFromRoutes($collection, $parentCollection);
+            $this->breadcrumbs = $this->createBreadcrumbsFromRoutes($collection);
         }
 
         return $this->breadcrumbs;
@@ -104,17 +102,16 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
      * Creates an array of breadcrumbs from a given RouteCollection
      *
      * @param RouteCollection $routes
-     * @param RouteCollection $parentRoutes In the case of JMS i18n router, this collection is different.
      *
      * @return BreadcrumbCollectionInterface
      */
-    private function createBreadcrumbsFromRoutes(RouteCollection $routes, RouteCollection $parentRoutes)
+    private function createBreadcrumbsFromRoutes(RouteCollection $routes)
     {
         /** @var BreadcrumbCollectionInterface $breadcrumbs */
         $breadcrumbs = new $this->collectionClass();
 
         $route = $routes->get($this->currentRouteName);
-        if (!$route) {
+        if (null === $route) {
             // we did not find the route of this request. play it safe
             return $breadcrumbs;
         }
@@ -138,7 +135,7 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
 
             $parentRouteName = isset($options['parent_route']) ? $options['parent_route'] : null;
 
-            $route = $parentRoutes->get($parentRouteName);
+            $route = $routes->get($parentRouteName);
             if (null !== $parentRouteName && !$route) {
                 throw new \LogicException(sprintf(
                     'Parent route "%s" specified on route "%s" not found',
