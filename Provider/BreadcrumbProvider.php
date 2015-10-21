@@ -111,7 +111,7 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
         $breadcrumbs = new $this->collectionClass();
 
         $route = $routes->get($this->currentRouteName);
-        if (!$route) {
+        if (null === $route) {
             // we did not find the route of this request. play it safe
             return $breadcrumbs;
         }
