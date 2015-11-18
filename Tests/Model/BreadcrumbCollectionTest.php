@@ -102,7 +102,7 @@ class BreadcrumbCollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test throwing of exception if a route doesn't exist
+     * Test throwing of exception if a breadcrumb doesn't exist
      */
     public function testAddAfterBreadcrumbExceptionException()
     {

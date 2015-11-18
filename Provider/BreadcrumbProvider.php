@@ -2,29 +2,24 @@
 
 namespace Thormeier\BreadcrumbBundle\Provider;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
+use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
 use Thormeier\BreadcrumbBundle\Model\BreadcrumbCollectionInterface;
 use Thormeier\BreadcrumbBundle\Model\BreadcrumbInterface;
 
 /**
- * Breadcrumb factory class that is used to alter breadcrumbs and inject them where needed
+ * Breadcrumb factory class that is used to generate and alter breadcrumbs and inject them where needed
  */
 class BreadcrumbProvider implements BreadcrumbProviderInterface
 {
     /**
-     * @var RouterInterface
+     * @var array
      */
-    private $router;
-
-    /**
-     * Route name of the current request.
-     *
-     * @var string
-     */
-    private $currentRouteName;
+    private $requestBreadcrumbConfig;
 
     /**
      * @var BreadcrumbCollectionInterface
@@ -42,26 +37,24 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     private $collectionClass;
 
     /**
-     * @param RouterInterface $router
      * @param string          $modelClass
      * @param string          $collectionClass
      */
-    public function __construct(RouterInterface $router, $modelClass, $collectionClass)
+    public function __construct($modelClass, $collectionClass)
     {
-        $this->router = $router;
         $this->modelClass = $modelClass;
         $this->collectionClass = $collectionClass;
     }
 
     /**
-     * Listen to the kernelRequest event to get the route out of the request
+     * Listen to the kernelRequest event to get the breadcrumb config from the request
      *
      * @param GetResponseEvent $event
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
         if ($event->getRequestType() === HttpKernelInterface::MASTER_REQUEST) {
-            $this->currentRouteName = $event->getRequest()->get('_route');
+            $this->requestBreadcrumbConfig = $event->getRequest()->get('_breadcrumbs', array());
         }
     }
 
@@ -71,14 +64,7 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     public function getBreadcrumbs()
     {
         if (null === $this->breadcrumbs) {
-            // Support for JMS i18n router
-            if (method_exists($this->router, 'getOriginalRouteCollection')) {
-                $collection = $this->router->getOriginalRouteCollection();
-            } else {
-                $collection = $this->router->getRouteCollection();
-            }
-
-            $this->breadcrumbs = $this->createBreadcrumbsFromRoutes($collection);
+            $this->breadcrumbs = $this->generateBreadcrumbCollectionFromRequest();
         }
 
         return $this->breadcrumbs;
@@ -99,53 +85,24 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     }
 
     /**
-     * Creates an array of breadcrumbs from a given RouteCollection
-     *
-     * @param RouteCollection $routes
+     * Generates an instance of an implementation of BreadcrumbCollectionInterface,
+     * based on the breadcrumb information given by the SF Request
      *
      * @return BreadcrumbCollectionInterface
      */
-    private function createBreadcrumbsFromRoutes(RouteCollection $routes)
+    private function generateBreadcrumbCollectionFromRequest()
     {
-        /** @var BreadcrumbCollectionInterface $breadcrumbs */
-        $breadcrumbs = new $this->collectionClass();
+        /** @var BreadcrumbCollectionInterface $collection */
+        $collection = new $this->collectionClass();
 
-        $route = $routes->get($this->currentRouteName);
-        if (null === $route) {
-            // we did not find the route of this request. play it safe
-            return $breadcrumbs;
-        }
-        $routeName = $this->currentRouteName;
-
-        if (false === $route->hasOption('breadcrumb')) {
-            return $breadcrumbs;
-        }
-
-        do {
-            $options = $route->getOption('breadcrumb');
-
-            if (null === $options || false === isset($options['label'])) {
-                throw new \LogicException(sprintf(
-                    'Routes used as parent routes need to be configured as breadcrumbs themselves. Associated route: "%s"',
-                    $routeName
+        if (null !== $this->requestBreadcrumbConfig) {
+            foreach ($this->requestBreadcrumbConfig as $rawCrumb) {
+                $collection->addBreadcrumb(new Breadcrumb(
+                    $rawCrumb['label'], $rawCrumb['route']
                 ));
             }
+        }
 
-            $breadcrumbs->addBreadcrumbToStart(new $this->modelClass($options['label'], $routeName));
-
-            $parentRouteName = isset($options['parent_route']) ? $options['parent_route'] : null;
-
-            $route = $routes->get($parentRouteName);
-            if (null !== $parentRouteName && !$route) {
-                throw new \LogicException(sprintf(
-                    'Parent route "%s" specified on route "%s" not found',
-                    $parentRouteName,
-                    $routeName
-                ));
-            }
-            $routeName = $parentRouteName;
-        } while (null !== $parentRouteName);
-
-        return $breadcrumbs;
+        return $collection;
     }
 }

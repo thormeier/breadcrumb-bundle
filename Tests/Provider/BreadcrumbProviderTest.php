@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
+use Thormeier\BreadcrumbBundle\Model\BreadcrumbCollection;
 use Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider;
 
 /**
@@ -26,7 +27,7 @@ class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
     private $responseEvent;
 
     /**
-     * @var Request
+     * @var \PHPUnit_Framework_MockObject_MockObject|Request
      */
     private $request;
 
@@ -54,130 +55,83 @@ class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
             ->method('getRequestType')
             ->will($this->returnValue(HttpKernelInterface::MASTER_REQUEST));
 
-        /** @var RouterInterface $router */
-        $router = $this->getMockedRouter();
-
-        $this->provider = new BreadcrumbProvider($router, self::MODEL_CLASS, self::COLLECTION_CLASS);
+        $this->provider = new BreadcrumbProvider(self::MODEL_CLASS, self::COLLECTION_CLASS);
     }
 
     /**
-     * Test getting of all breadcrumbs
-     *
-     * @param string $route
-     * @param array  $expectedTree
-     *
-     * @dataProvider getBreadcrumbsProvider
+     * Tests the outcome if there are no configured breadcrumbs
      */
-    public function testGetBreadcrumbs($route, array $expectedTree)
+    public function testGetNoConfiguredBreadcrumbs()
     {
         $this->request->expects($this->any())
             ->method('get')
-            ->will($this->returnValue($route));
+            ->will($this->returnValue(array()));
 
         $this->provider->onKernelRequest($this->responseEvent);
+        $result = $this->provider->getBreadcrumbs();
 
-        $this->assertEquals($expectedTree, $this->provider->getBreadcrumbs()->getAll());
+        $this->assertInstanceOf('\Thormeier\BreadcrumbBundle\Model\BreadcrumbCollection', $result);
+        $this->assertEmpty($result->getAll());
     }
 
     /**
-     * Data provider method for testGetBreadcrumbs
-     *
-     * @return array
+     * Test the generation of a single breadcrumb
      */
-    public function getBreadcrumbsProvider()
+    public function testSingleBreadcrumb()
     {
-        $breadcrumbA = new Breadcrumb('a', 'a');
-        $breadcrumbB = new Breadcrumb('b', 'b');
-        $breadcrumbC = new Breadcrumb('c', 'c');
-        $breadcrumbD = new Breadcrumb('d', 'd');
+        $label = 'foo';
+        $route = 'bar';
 
-        return array(
-            array('a', array($breadcrumbA)),
-            array('b', array($breadcrumbA, $breadcrumbB)),
-            array('c', array($breadcrumbA, $breadcrumbC)),
-            array('d', array($breadcrumbD)),
-        );
-    }
-
-    /**
-     * @param string     $currentRoute
-     * @param string     $desiredBreadcrumbRoute
-     * @param Breadcrumb $expectedResult
-     *
-     * @dataProvider breadcrumbsByRouteProvider
-     */
-    public function testGetBreadcrumbByRoute($currentRoute, $desiredBreadcrumbRoute, Breadcrumb $expectedResult = null)
-    {
         $this->request->expects($this->any())
             ->method('get')
-            ->will($this->returnValue($currentRoute));
+            ->will($this->returnValue(array(
+                array(
+                    'label' => $label,
+                    'route' => $route,
+                ),
+            )));
 
         $this->provider->onKernelRequest($this->responseEvent);
+        $result = $this->provider->getBreadcrumbs();
 
-        $this->assertEquals($expectedResult, $this->provider->getBreadcrumbByRoute($desiredBreadcrumbRoute));
+        $this->assertCount(1, $result->getAll());
+
+        $this->assertEquals($label, $result->getAll()[0]->getLabel());
+        $this->assertEquals($route, $result->getAll()[0]->getRoute());
     }
 
     /**
-     * Data provider method for testGetBreadcrumbByRoute
-     *
-     * @return array
+     * Test the generation of multiple breadcrumbs
      */
-    public function breadcrumbsByRouteProvider()
+    public function testMultipleBreadcrumbs()
     {
-        $breadcrumbA = new Breadcrumb('a', 'a');
-        $breadcrumbB = new Breadcrumb('b', 'b');
-        $breadcrumbC = new Breadcrumb('c', 'c');
+        $label1 = 'foo';
+        $route1 = 'bar';
+        $label2 = 'baz';
+        $route2 = 'qux';
 
-        return array(
-            array('a', 'a', $breadcrumbA),
-            array('a', 'b', null),
-            array('b', 'b', $breadcrumbB),
-            array('b', 'a', $breadcrumbA),
-            array('c', 'a', $breadcrumbA),
-            array('c', 'b', null),
-            array('c', 'c', $breadcrumbC),
-        );
-    }
+        $this->request->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue(array(
+                array(
+                    'label' => $label1,
+                    'route' => $route1,
+                ),
+                array(
+                    'label' => $label2,
+                    'route' => $route2,
+                ),
+            )));
 
-    /**
-     * Returns a mocked router service
-     *
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    private function getMockedRouter()
-    {
-        $routeA = new Route('a', array(), array(), array('breadcrumb' => array(
-            'label' => 'a',
-        )));
-        $routeB = new Route('b', array(), array(), array('breadcrumb' => array(
-            'label' => 'b',
-            'parent_route' => 'a',
-        )));
-        $routeC = new Route('c', array(), array(), array('breadcrumb' => array(
-            'label' => 'c',
-            'parent_route' => 'a',
-        )));
-        $routeD = new Route('d', array(), array(), array('breadcrumb' => array(
-            'label' => 'd',
-        )));
+        $this->provider->onKernelRequest($this->responseEvent);
+        $result = $this->provider->getBreadcrumbs();
 
-        $routeCollection = new RouteCollection();
-        $routeCollection->add('a', $routeA);
-        $routeCollection->add('b', $routeB);
-        $routeCollection->add('c', $routeC);
-        $routeCollection->add('d', $routeD);
+        $this->assertCount(2, $result->getAll());
 
-        $router = $this->getMockBuilder('\Symfony\Component\Routing\RouterInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(array('addExpressionLanguageProvider', 'getRouteCollection', 'getOriginalRouteCollection'))
-            ->getMockForAbstractClass();
-        $router->expects($this->any())
-            ->method('getRouteCollection')
-            ->will($this->returnValue($routeCollection));
-        $router->expects($this->any())
-            ->method('getOriginalRouteCollection')
-            ->will($this->returnValue($routeCollection));
+        $this->assertEquals($label1, $result->getAll()[0]->getLabel());
+        $this->assertEquals($route1, $result->getAll()[0]->getRoute());
 
-        return $router;
+        $this->assertEquals($label2, $result->getAll()[1]->getLabel());
+        $this->assertEquals($route2, $result->getAll()[1]->getRoute());
     }
 }
