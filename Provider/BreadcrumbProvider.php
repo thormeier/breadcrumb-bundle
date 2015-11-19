@@ -56,7 +56,7 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     }
 
     /**
-     * @return BreadcrumbCollectionInterface
+     * {@inheritdoc}
      */
     public function getBreadcrumbs()
     {
@@ -68,7 +68,7 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     }
 
     /**
-     * Convenience method to get an entry from the breadcrumbs.
+     * Convenience method to get an entry from the breadcrumb list of the current requests route.
      *
      * @param string $route
      *

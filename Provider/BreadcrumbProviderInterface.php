@@ -10,6 +10,8 @@ use Thormeier\BreadcrumbBundle\Model\BreadcrumbCollectionInterface;
 interface BreadcrumbProviderInterface
 {
     /**
+     * Get the BreadcrumCollection for the current requests route
+     *
      * @return BreadcrumbCollectionInterface
      */
     public function getBreadcrumbs();
