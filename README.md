@@ -162,3 +162,7 @@ The provider service ID can be replaced by setting the parameter `provider_servi
     thormeier_breadcrumb:
         provider_service_id: acme.breadcrumbs.my_provider
 
+
+### Caching
+
+This bundle uses the routing cache to store breadcrumb lists per route on `cache:warmup`. They are then turned into a `BreadcrumbCollection` on demand.
