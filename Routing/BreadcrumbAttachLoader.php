@@ -2,22 +2,37 @@
 
 namespace Thormeier\BreadcrumbBundle\Routing;
 
-use Symfony\Bundle\FrameworkBundle\Routing\DelegatingLoader;
+use Symfony\Component\Config\Loader\Loader;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Attaches breadcrumb tree to every routes default config
  */
-class BreadcrumbAttachLoader extends DelegatingLoader
+class BreadcrumbAttachLoader extends Loader
 {
+    /**
+     * @var LoaderInterface
+     */
+    private $routerLoader;
+
+    /**
+     * Attaches breadcrumb tree to every routes default config
+     *
+     * @param LoaderInterface $routerLoader
+     */
+    public function __construct(LoaderInterface $routerLoader)
+    {
+        $this->routerLoader = $routerLoader;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function load($resource, $type = null)
     {
-        /** @var RouteCollection $routeCollection */
-        $routeCollection = parent::load($resource, $type);
+        $routeCollection = $this->routerLoader->load($resource, $type);
 
         foreach ($routeCollection->all() as $key => $route) {
             if ($route->hasOption('breadcrumb')) {
@@ -53,9 +68,9 @@ class BreadcrumbAttachLoader extends DelegatingLoader
             );
         }
 
-        if (!isset($breadcrumbOptions['label'])) {
+        if (false === isset($breadcrumbOptions['label'])) {
             throw new \InvalidArgumentException(sprintf(
-                'Label missing for route "%s"',
+                'Label for breadcrumb on route "%s" must be configured',
                 $routeKey
             ));
         }
@@ -66,5 +81,18 @@ class BreadcrumbAttachLoader extends DelegatingLoader
         );
 
         return $rawBreadcrumbsCollection;
+    }
+
+    /**
+     * Returns whether this class supports the given resource.
+     *
+     * @param mixed       $resource A resource
+     * @param string|null $type     The resource type or null if unknown
+     *
+     * @return bool True if this class supports the given resource, false otherwise
+     */
+    public function supports($resource, $type = null)
+    {
+        return $this->routerLoader->supports($resource, $type);
     }
 }

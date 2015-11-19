@@ -2,11 +2,8 @@
 
 namespace Thormeier\BreadcrumbBundle\Provider;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\RouterInterface;
 use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
 use Thormeier\BreadcrumbBundle\Model\BreadcrumbCollectionInterface;
 use Thormeier\BreadcrumbBundle\Model\BreadcrumbInterface;
@@ -37,8 +34,8 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     private $collectionClass;
 
     /**
-     * @param string          $modelClass
-     * @param string          $collectionClass
+     * @param string $modelClass
+     * @param string $collectionClass
      */
     public function __construct($modelClass, $collectionClass)
     {
@@ -54,7 +51,7 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
     public function onKernelRequest(GetResponseEvent $event)
     {
         if ($event->getRequestType() === HttpKernelInterface::MASTER_REQUEST) {
-            $this->requestBreadcrumbConfig = $event->getRequest()->get('_breadcrumbs', array());
+            $this->requestBreadcrumbConfig = $event->getRequest()->attributes->get('_breadcrumbs', array());
         }
     }
 

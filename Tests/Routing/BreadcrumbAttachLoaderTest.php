@@ -19,36 +19,20 @@ class BreadcrumbAttachLoaderTestextends extends \PHPUnit_Framework_TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\Config\Loader\LoaderResolverInterface
      */
-    private $loaderInterface;
+    private $delegatingLoader;
 
     /**
      * Set up mocks for the whole router loader
      */
     public function setUp()
     {
-        /** @var \PHPUnit_Framework_MockObject_MockObject|\Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser $parser */
-        $parser = $this->getMockBuilder('Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser')
-            ->disableOriginalConstructor()
-            ->setMethods(array('parse'))
-            ->getMock();
-        $parser->expects($this->any())
-            ->method('parse')
-            ->will($this->returnValue('foobar'));
-
-        /** @var \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\Config\Loader\LoaderInterface $loader */
-        $this->loaderInterface = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderInterface')
+        /** @var \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\Config\Loader\LoaderInterface $delegatingLoader */
+        $delegatingLoader = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderInterface')
             ->setMethods(array('load'))
             ->getMockForAbstractClass();
 
-        /** @var \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\Config\Loader\LoaderResolverInterface $resolver */
-        $resolver = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderResolverInterface')
-            ->setMethods(array('resolve'))
-            ->getMockForAbstractClass();
-        $resolver->expects($this->any())
-            ->method('resolve')
-            ->will($this->returnValue($this->loaderInterface));
-
-        $this->loader = new BreadcrumbAttachLoader($parser, null, $resolver);
+        $this->delegatingLoader = $delegatingLoader;
+        $this->loader = new BreadcrumbAttachLoader($this->delegatingLoader);
     }
 
     /**
@@ -73,7 +57,7 @@ class BreadcrumbAttachLoaderTestextends extends \PHPUnit_Framework_TestCase
         $collection->add('foo', new Route('/foo', array(), array(), $route1Crumbs));
         $collection->add('bar', new Route('/bar', array(), array(), $route2Crumbs));
 
-        $this->loaderInterface->expects($this->once())
+        $this->delegatingLoader->expects($this->once())
             ->method('load')
             ->will($this->returnValue($collection));
 
@@ -111,7 +95,7 @@ class BreadcrumbAttachLoaderTestextends extends \PHPUnit_Framework_TestCase
         $collection->add('foo', new Route('/foo', array(), array(), $route1Crumbs));
         $collection->add('bar', new Route('/bar', array(), array(), $route2Crumbs));
 
-        $this->loaderInterface->expects($this->once())
+        $this->delegatingLoader->expects($this->once())
             ->method('load')
             ->will($this->returnValue($collection));
 
