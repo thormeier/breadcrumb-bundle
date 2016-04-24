@@ -36,9 +36,12 @@ class BreadcrumbExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'breadcrumbs' => new \Twig_Function_Method(
-                $this,
-                'renderBreadcrumbs',
+            new \Twig_SimpleFunction(
+                'breadcrumbs',
+                array(
+                    $this,
+                    'renderBreadcrumbs'
+                ),
                 array(
                     'needs_environment' => true,
                     'is_safe' => array('html'),
