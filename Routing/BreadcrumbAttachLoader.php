@@ -47,43 +47,6 @@ class BreadcrumbAttachLoader extends Loader
     }
 
     /**
-     * Builds an array of breadcrumbs for the given route recursively
-     *
-     * @param Route           $route
-     * @param string          $routeKey
-     * @param RouteCollection $routeCollection
-     *
-     * @return array
-     */
-    private function getBreadcrumbs(Route $route, $routeKey, RouteCollection $routeCollection)
-    {
-        $breadcrumbOptions = $route->getOption('breadcrumb');
-
-        $rawBreadcrumbsCollection = array();
-        if (isset($breadcrumbOptions['parent_route'])) {
-            $rawBreadcrumbsCollection = $this->getBreadcrumbs(
-                $routeCollection->get($breadcrumbOptions['parent_route']),
-                $breadcrumbOptions['parent_route'],
-                $routeCollection
-            );
-        }
-
-        if (false === isset($breadcrumbOptions['label'])) {
-            throw new \InvalidArgumentException(sprintf(
-                'Label for breadcrumb on route "%s" must be configured',
-                $routeKey
-            ));
-        }
-
-        $rawBreadcrumbsCollection[] = array(
-            'route' => $routeKey,
-            'label' => $breadcrumbOptions['label'],
-        );
-
-        return $rawBreadcrumbsCollection;
-    }
-
-    /**
      * Returns whether this class supports the given resource.
      *
      * @param mixed       $resource A resource
@@ -95,4 +58,56 @@ class BreadcrumbAttachLoader extends Loader
     {
         return $this->routerLoader->supports($resource, $type);
     }
+
+    /**
+     * Builds an array of breadcrumbs for the given route recursively
+     *
+     * @param Route           $route
+     * @param string          $routeKey
+     * @param RouteCollection $routeCollection
+     * @param array           $rawBreadcrumbsCollection
+     *
+     * @return array
+     */
+    private function getBreadcrumbs(Route $route, $routeKey, RouteCollection $routeCollection, $rawBreadcrumbsCollection = array())
+    {
+        $breadcrumbOptions = $route->getOption('breadcrumb');
+
+        // No label, no crumb.
+        if (false === isset($breadcrumbOptions['label'])) {
+            throw new \InvalidArgumentException(sprintf(
+                'Label for breadcrumb on route "%s" must be configured',
+                $routeKey
+            ));
+        }
+
+        $rawCrumb = array(
+            'route' => $routeKey,
+            'label' => $breadcrumbOptions['label'],
+        );
+
+        // If this route already is in the raw collection, there's likely a circular breadcrumb, which will cause memory exhaustion
+        if (false !== array_search($rawCrumb, $rawBreadcrumbsCollection)) {
+            throw new \LogicException(sprintf(
+                'Circular breadcrumbs detected at route "%s"',
+                $routeKey
+            ));
+        }
+
+        // Add element to beginning of breadcrumbs
+        array_unshift($rawBreadcrumbsCollection, $rawCrumb);
+
+        // If there's a parent, add it and its parents as well
+        if (isset($breadcrumbOptions['parent_route'])) {
+            $rawBreadcrumbsCollection = $this->getBreadcrumbs(
+                $routeCollection->get($breadcrumbOptions['parent_route']),
+                $breadcrumbOptions['parent_route'],
+                $routeCollection,
+                $rawBreadcrumbsCollection
+            );
+        }
+
+        return $rawBreadcrumbsCollection;
+    }
+
 }

@@ -4,12 +4,13 @@ namespace Thormeier\BreadcrumbBundle\Tests\Routing;
 
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
 use Thormeier\BreadcrumbBundle\Routing\BreadcrumbAttachLoader;
 
 /**
  * Tests the router loader that hooks in and attaches the breadcrumb options to _breadcrumb defaults
  */
-class BreadcrumbAttachLoaderTestextends extends \PHPUnit_Framework_TestCase
+class BreadcrumbAttachLoaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var BreadcrumbAttachLoader
@@ -66,6 +67,10 @@ class BreadcrumbAttachLoaderTestextends extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(2, $result->all());
         $this->assertCount(2, $result->get('foo')->getDefault('_breadcrumbs'));
+        $this->assertEquals(array(
+            array('label' => 'Bar', 'route' => 'bar'),
+            array('label' => 'Foo', 'route' => 'foo'),
+        ), $result->get('foo')->getDefault('_breadcrumbs'));
         $this->assertEquals(array('label' => 'Bar', 'route' => 'bar',), $result->get('foo')->getDefault('_breadcrumbs')[0]);
         $this->assertEquals(array('label' => 'Foo', 'route' => 'foo',), $result->get('foo')->getDefault('_breadcrumbs')[1]);
 
@@ -78,8 +83,6 @@ class BreadcrumbAttachLoaderTestextends extends \PHPUnit_Framework_TestCase
      */
     public function testMalformedBreadcrumb()
     {
-        $collection = new RouteCollection();
-
         $route1Crumbs = array(
             'breadcrumb' => array(
                 // label missing
@@ -92,6 +95,7 @@ class BreadcrumbAttachLoaderTestextends extends \PHPUnit_Framework_TestCase
             )
         );
 
+        $collection = new RouteCollection();
         $collection->add('foo', new Route('/foo', array(), array(), $route1Crumbs));
         $collection->add('bar', new Route('/bar', array(), array(), $route2Crumbs));
 
@@ -100,6 +104,39 @@ class BreadcrumbAttachLoaderTestextends extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($collection));
 
         $this->setExpectedException('\InvalidArgumentException');
+        $this->loader->load('foobar');
+    }
+
+    /**
+     * Test behaviour of loader when breadcrumbs are configured circular (a -> b -> a etc.)
+     */
+    public function testCircularBreadcrumbs()
+    {
+        $routeFooName = 'foo';
+        $routeBarName = 'bar';
+
+        $routeFooCrumbs = array(
+            'breadcrumb' => array(
+                'label' => 'Foo',
+                'parent_route' => $routeBarName,
+            ),
+        );
+        $routeBarCrumbs = array(
+            'breadcrumb' => array(
+                'label' => 'Bar',
+                'parent_route' => $routeFooName,
+            ),
+        );
+
+        $collection = new RouteCollection();
+        $collection->add($routeFooName, new Route('/foo', array(), array(), $routeFooCrumbs));
+        $collection->add($routeBarName, new Route('/bar', array(), array(), $routeBarCrumbs));
+
+        $this->delegatingLoader->expects($this->once())
+            ->method('load')
+            ->will($this->returnValue($collection));
+
+        $this->setExpectedException('\LogicException');
         $this->loader->load('foobar');
     }
 }

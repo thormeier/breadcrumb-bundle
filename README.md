@@ -5,7 +5,7 @@ BreadcrumbBundle
 
 ## Introduction
 
-This Symfony2 bundle provides easy integration of breadcrumbs in your TWIG templates via route config.
+This Symfony bundle provides integration of breadcrumbs via route config and rendering in your Twig templates.
 This bundle is heavily inspired by the inactive https://github.com/xi-project/xi-bundle-breadcrumbs
 
 ## Installation
@@ -30,7 +30,7 @@ This bundle is heavily inspired by the inactive https://github.com/xi-project/xi
 
 ## Configuration
 
-In your config.yml:
+Enable the bundle in your config.yml:
 
     # config.yml
     thormeier_breadcrumb: ~
@@ -77,7 +77,7 @@ Would result in a breadcrumb tree like:
     acme_demo_home
         |- acme_demo_contact
         `- acme_demo_catalogue
-           `- acme_demo_catalogue_categories:
+           `- acme_demo_catalogue_categories
 
 If the current route is `acme_demo_catalogue`, the breadcrumbs would for instance show the following:
 
@@ -110,9 +110,41 @@ If you happen to have dynamic routes or dynamic translations that you need in yo
         // ...
     }
 
+Please note that the breadcrumb must be defined on the route in order to set parameters.
+
+## Dynamic breadcrumbs
+
+If you happen to have a dynamic routing tree, for instance a tree of category pages that can go infinitely deep, you can add breadcrumbs that are not defined on a route on the fly. For instance like this:
+
+    <?php
+    
+    use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
+    
+    // ...
+    
+    // Route of the product, we want the categories before this
+    $productCrumb = $breadcrumbProvder->getBreadcrumbByRoute('acme_demo_product_detail');
+    $collection = $breadcrumbProvider->getBreadcrumbs();
+    
+    foreach ($product->getCategories() as $category) {
+        $newCrumb = new Breadcrumb(
+            'Category: %name%',              // Label
+            'acme_demo_category',            // Route
+            ['id' => $category->getId()],    // Route params
+            ['name' => $category->getName()] // Label params
+        );
+        
+        // Adds $newCrumb right in front of $productCrumb
+        $collection->addBreadcrumbBeforeCrumb($newCrumb, $productCrumb);
+        
+        // Or: ->addBreadcrumb(), ->addBreadcrumbAtPosition(), ->addBreadcrumbAfterCrumb(), ->addBreadcrumbToStart()
+    }
+
+These breadcrumbs are not stored in the cache though.
+
 ### Displaying in twig
 
-Simply call as following:
+Call the twig extension as following:
 
     {# someTemplate.html.twig #}
     {# ... #}
@@ -129,7 +161,7 @@ If you want to use a custom template, add the following to your config.yml
     thormeier_breadcrumb:
         template: 'my twig template path'
 
-Your custom breadcrumb template receives a variable called `breadcrumbs` that is a collection that represents your breadcrumbs, ordered by first to last.
+Your custom breadcrumb template receives a variable called `breadcrumbs` that is a collection that represents your breadcrumbs, ordered by highest in the tree to lowest.
 
 A single `breadcrumb` has the fields `route`, `routeParams`, `label` and `labelParams`. `route` and `routeParams` are used to generate a path in twig, i.e. `path(breadcrumb.route, breadcrumb.routeParams)`, whereas `label` and `labelParams` are used to generate the text for the breadcrumb, i.e. `{{ (breadcrumb.label)|trans(breadcrumb.labelParams) }}`
 
@@ -149,7 +181,7 @@ Have a look at `Resources/views/breadcrumbs.html.twig` to see the default implem
 
 ### Customize implementations
 
-The model class and its collection can be replaced by own implementations, that implement the `Thormeier\BreadcrumbBundle\Model\BreadcrumbInterface` and `Thormeier\BreadcrumbBundle\Model\BreadcrumbCollectionInterface`:
+The model class and/or its collection can be replaced by own implementations, that implement the `Thormeier\BreadcrumbBundle\Model\BreadcrumbInterface` and `Thormeier\BreadcrumbBundle\Model\BreadcrumbCollectionInterface`:
 
     # config.yml
     thormeier_breadcrumb:
@@ -162,7 +194,10 @@ The provider service ID can be replaced by setting the parameter `provider_servi
     thormeier_breadcrumb:
         provider_service_id: acme.breadcrumbs.my_provider
 
-
 ### Caching
 
 This bundle uses the routing cache to store breadcrumb lists per route on `cache:warmup`. They are then turned into a `BreadcrumbCollection` on demand.
+
+### Slides
+
+A slideshow presenting the bundle and explaining some concepts a little further is available on slideshare: http://www.slideshare.net/Thormeier/thormeierbreadcrumbbundle 
