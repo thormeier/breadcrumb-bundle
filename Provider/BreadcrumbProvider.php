@@ -92,9 +92,11 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
         /** @var BreadcrumbCollectionInterface $collection */
         $collection = new $this->collectionClass();
 
+        $model = $this->modelClass;
+
         if (null !== $this->requestBreadcrumbConfig) {
             foreach ($this->requestBreadcrumbConfig as $rawCrumb) {
-                $collection->addBreadcrumb(new Breadcrumb(
+                $collection->addBreadcrumb(new $model(
                     $rawCrumb['label'], $rawCrumb['route']
                 ));
             }
