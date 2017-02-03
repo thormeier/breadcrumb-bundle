@@ -85,7 +85,22 @@ If the current route is `acme_demo_catalogue`, the breadcrumbs would for instanc
 
 ### Dynamic routes
 
-If you happen to have dynamic routes or dynamic translations that you need in your breadcrumbs, you can set parameters for both directly on the `Breadcrumb` object, for instance:
+If you happen to have dynamic routes or dynamic translations that you need in your breadcrumbs, they can be defined like so:
+
+    # routing yml
+    
+    acme_demo_product_detail:
+        path: /products/{id}
+        options:
+            breadcrumb:
+                label: 'Produkt: %%name%%'
+                parent_route: acme_demo_catalogue
+
+**Notice the double `%` to escape the parameter in the label. This needs to be done, because `routing.yml` 
+is being parsed by the Symfony container and recognizes constructs, such as `%name%` as a container parameter 
+and tries to inject those. The double-`%` escapes it, the template is handling the rest.**
+
+You can then set parameters for both directly on the `Breadcrumb` object, for instance:
 
     <?php
     // MyController
@@ -112,7 +127,7 @@ If you happen to have dynamic routes or dynamic translations that you need in yo
 
 Please note that the breadcrumb must be defined on the route in order to set parameters.
 
-## Dynamic breadcrumbs
+### Dynamic breadcrumbs
 
 If you happen to have a dynamic routing tree, for instance a tree of category pages that can go infinitely deep, you can add breadcrumbs that are not defined on a route on the fly. For instance like this:
 
@@ -172,10 +187,12 @@ Your custom template might look something like this:
     <div>
         {% for breadcrumb in breadcrumbs %}
             <a href="{{ path(breadcrumb.route, breadcrumb.routeParams) }}">
-                {{ (breadcrumb.label)|trans(breadcrumb.labelParams) }}
+                {{ (breadcrumb.label)|replace('%%', '%')|trans(breadcrumb.labelParams) }}
             </a>
         {% endfor %}
     </div>
+
+**The replacing of `%%` with single `%` happens inside the template. See *"Dynamic routes"* as why this is needed.**
 
 Have a look at `Resources/views/breadcrumbs.html.twig` to see the default implementation
 
@@ -198,6 +215,6 @@ The provider service ID can be replaced by setting the parameter `provider_servi
 
 This bundle uses the routing cache to store breadcrumb lists per route on `cache:warmup`. They are then turned into a `BreadcrumbCollection` on demand.
 
-### Slides
+## Slides
 
 A slideshow presenting the bundle and explaining some concepts a little further is available on slideshare: http://www.slideshare.net/Thormeier/thormeierbreadcrumbbundle 
