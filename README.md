@@ -185,10 +185,10 @@ If you want to use a custom template, add the following to your config.yml
 Your custom breadcrumb template receives a variable called `breadcrumbs` that is a collection that represents your 
 breadcrumbs, ordered by highest in the tree to lowest.
 
-A single `breadcrumb` has the fields `route`, `routeParams`, `label` and `labelParams`. `route` and `routeParams` 
-are used to generate a path in twig, i.e. `path(breadcrumb.route, breadcrumb.routeParams)`, whereas `label` and 
-`labelParams` are used to generate the text for the breadcrumb, i.e. 
-`{{ (breadcrumb.label)|trans(breadcrumb.labelParams) }}`
+A single `breadcrumb` has the fields `route`, `routeParameters`, `label` and `labelParameters`. `route` and `routeParameters` 
+are used to generate a path in twig, i.e. `path(breadcrumb.route, breadcrumb.routeParameters)`, whereas `label` and 
+`labelParameters` are used to generate the text for the breadcrumb, i.e. 
+`{{ (breadcrumb.label)|trans(breadcrumb.labelParameters) }}`
 
 Your custom template might look something like this:
 
@@ -196,8 +196,8 @@ Your custom template might look something like this:
 
     <div>
         {% for breadcrumb in breadcrumbs %}
-            <a href="{{ path(breadcrumb.route, breadcrumb.routeParams) }}">
-                {{ (breadcrumb.label)|replace('%%', '%')|trans(breadcrumb.labelParams) }}
+            <a href="{{ path(breadcrumb.route, breadcrumb.routeParameters) }}">
+                {{ (breadcrumb.label)|replace('%%', '%')|trans(breadcrumb.labelParameters) }}
             </a>
         {% endfor %}
     </div>
