@@ -11,7 +11,10 @@
         }
     ],
     "autoload": {
-        "psr-4": { "Thormeier\\BreadcrumbBundle\\": "" }
+        "psr-4": { "Thormeier\\BreadcrumbBundle\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
     },
     "require": {
         "php": ">=5.3.3",
