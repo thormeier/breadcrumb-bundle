@@ -15,17 +15,15 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/framework-bundle": "2.3.*|^2.6.0|3.*"
+        "symfony/framework-bundle": "2.3.*|^2.6.0|^3.0|^4.0"
     },
     "require-dev": {
-        "twig/twig": "1.15.*@dev",
+        "twig/twig": "^1.15|^2.0",
         "phpunit/phpunit": "4.*"
     },
     "suggest": {
         "twig/twig": "to render breadcrumbs with a twig template"
     },
-    "minimum-stability": "dev",
-
     "extra": {
         "branch-alias": {
             "dev-master": "2.0-dev"
