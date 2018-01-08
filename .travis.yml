@@ -1,8 +1,16 @@
 language: php
 
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
 php:
   - 5.5
   - 7.0
+  - 7.1
+  - 7.2
 
 env:
   - SYMFONY_VERSION=2.3.*
@@ -12,10 +20,35 @@ env:
   - SYMFONY_VERSION=3.0.*
   - SYMFONY_VERSION=3.1.*
   - SYMFONY_VERSION=3.2.*
-  - SYMFONY_VERSION=dev-master
+  - SYMFONY_VERSION=3.3.*
+  - SYMFONY_VERSION=3.4.*
+  - SYMFONY_VERSION=4.0.*
 
-before_script:
+matrix:
+  fast_finish: true
+  exclude:
+    - php: 5.5
+      env: SYMFONY_VERSION=4.0.*
+    - php: 7.0
+      env: SYMFONY_VERSION=4.0.*
+  include:
+    - php: 7.1
+      env: SYMFONY_VERSION=4.1.* STABILITY=dev
+    - php: 7.2
+      env: SYMFONY_VERSION=4.1.* STABILITY=dev
+  allow_failures:
+    - php: 7.1
+      env: SYMFONY_VERSION=4.1.* STABILITY=dev
+    - php: 7.2
+      env: SYMFONY_VERSION=4.1.* STABILITY=dev
+
+before_install:
   - composer self-update
-  - composer require symfony/framework-bundle:${SYMFONY_VERSION} --dev
+  - if [ $STABILITY ]; then composer config minimum-stability ${STABILITY}; fi;
+  - composer require --dev symfony/framework-bundle:${SYMFONY_VERSION} --no-update
 
-script: phpunit --coverage-text
+install:
+  - composer update --ansi --prefer-dist --no-interaction --optimize-autoloader --no-suggest --no-progress
+
+script:
+  - phpunit --coverage-text
