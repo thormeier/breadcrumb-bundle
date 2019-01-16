@@ -5,7 +5,7 @@
 
     <services>
 
-        <service id="thormeier_breadcrumb.breadcrumb_provider.default" class="Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider">
+        <service id="thormeier_breadcrumb.breadcrumb_provider.default" class="Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider" public="true">
             <argument>%thormeier_breadcrumb.class.model%</argument>
             <argument>%thormeier_breadcrumb.class.collection%</argument>
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
