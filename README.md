@@ -90,7 +90,7 @@ configuration happens. This means that configuring breadcrumbs for instance via 
      * ...
      * @Route(
      *    "/contact",
-     *    name="course",
+     *    name="acme_demo_contact",
      *    options={
      *        "breadcrumb" = {
      *            "label" = "Contact",
@@ -224,7 +224,7 @@ Your custom template might look something like this:
     <div>
         {% for breadcrumb in breadcrumbs %}
             <a href="{{ path(breadcrumb.route, breadcrumb.routeParameters) }}">
-                {{ (breadcrumb.label)|replace('%%', '%')|trans(breadcrumb.labelParameters) }}
+                {{ breadcrumb.label|replace({"%%": "%"})|trans(breadcrumb.labelParameters) }}
             </a>
         {% endfor %}
     </div>
@@ -258,4 +258,4 @@ a `BreadcrumbCollection` on demand.
 ## Slides
 
 A slideshow presenting the bundle and explaining some concepts a little further is available on slideshare: 
-http://www.slideshare.net/Thormeier/thormeierbreadcrumbbundle 
+[http://www.slideshare.net/Thormeier/thormeierbreadcrumbbundle](http://www.slideshare.net/Thormeier/thormeierbreadcrumbbundle)

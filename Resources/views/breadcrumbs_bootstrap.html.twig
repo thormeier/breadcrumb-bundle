@@ -1,7 +1,7 @@
 {%- if breadcrumbs|length -%}
     <ol class="breadcrumb">
         {%- for crumb in breadcrumbs -%}
-            {%- set crumbText = crumb.label|replace('%%', '%')|trans(crumb.labelParameters) -%}
+            {%- set crumbText = crumb.label|replace({"%%": "%"})|trans(crumb.labelParameters) -%}
             {%- if crumb.route == app.request.get('_route') -%}
                 <li class="breadcrumb-item active">
                     {{- crumbText -}}
