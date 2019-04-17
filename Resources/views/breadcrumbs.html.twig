@@ -1,7 +1,7 @@
 {% if breadcrumbs|length %}
     <ul class="breadcrumbs">
         {% for crumb in breadcrumbs %}
-            {% set crumbText = crumb.label|replace('%%', '%')|trans(crumb.labelParameters) %}
+            {% set crumbText = crumb.label|replace({"%%": "%"})|trans(crumb.labelParameters) %}
             {% if crumb.route == app.request.get('_route') %}
                 <li class="current">
                     <a title="{{ crumbText }}">{{ crumbText }}</a>
