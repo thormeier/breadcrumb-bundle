@@ -1,17 +1,17 @@
-{% if breadcrumbs|length %}
+{%- if breadcrumbs|length %}
     <ul class="breadcrumbs">
-        {% for crumb in breadcrumbs %}
-            {% set crumbText = crumb.label|replace({"%%": "%"})|trans(crumb.labelParameters) %}
-            {% if crumb.route == app.request.get('_route') %}
+        {%- for crumb in breadcrumbs -%}
+            {%- set crumbText = crumb.label|replace({"%%": "%"})|trans(crumb.labelParameters) -%}
+            {%- if crumb.route == app.request.get('_route') -%}
                 <li class="current">
                     <a title="{{ crumbText }}">{{ crumbText }}</a>
                 </li>
-            {% else %}
+            {%- else -%}
                 {% set crumbPath = path(crumb.route, crumb.routeParameters) %}
                 <li>
                     <a href="{{ crumbPath }}" title="{{ crumbText }}">{{ crumbText }}</a>
                 </li>
-            {% endif %}
-        {% endfor %}
+            {%- endif -%}
+        {%- endfor -%}
     </ul>
-{% endif %}
+{% endif -%}

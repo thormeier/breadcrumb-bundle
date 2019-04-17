@@ -83,6 +83,25 @@ If the current route is `acme_demo_catalogue`, the breadcrumbs would for instanc
 
     Home > Our Catalogue
 
+Since the configuration of the breadcrumbs happens on routing config, it's generally agnostic from _how_ the routing 
+configuration happens. This means that configuring breadcrumbs for instance via annotations is perfectly possible:
+
+    /**
+     * ...
+     * @Route(
+     *    "/contact",
+     *    name="course",
+     *    options={
+     *        "breadcrumb" = {
+     *            "label" = "Contact",
+     *            "parent_route" = "acme_demo_home"
+     *        }
+     *    })
+     * ...
+     */
+
+The configuration can also be done in XML and PHP.
+
 ### Dynamic routes
 
 If you happen to have dynamic routes or dynamic translations that you need in your breadcrumbs, they 
@@ -174,6 +193,14 @@ Call the twig extension as following:
     
     {# ... #}
 
+### Using the bootstrap template
+
+The bundle also provides a default implementation for [Bootstrap](https://getbootstrap.com/docs/4.3/components/breadcrumb/). It can be used as follows:
+
+    # config.yml
+    thormeier_breadcrumb:
+        template: @ThormeierBreadcrumb/breadcrumbs_bootstrap.html.twig
+
 ### Replacing the default template
 
 If you want to use a custom template, add the following to your config.yml
@@ -204,7 +231,7 @@ Your custom template might look something like this:
 
 **The replacing of `%%` with single `%` happens inside the template. See *"Dynamic routes"* as why this is needed.**
 
-Have a look at `Resources/views/breadcrumbs.html.twig` to see the default implementation
+Have a look at `Resources/views/breadcrumbs.html.twig` and `Resources/views/breadcrumbs_bootstrap.html.twig` to see the default implementations.
 
 ### Customize implementations
 
