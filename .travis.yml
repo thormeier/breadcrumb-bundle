@@ -61,4 +61,4 @@ install:
   - composer update --ansi --prefer-dist --no-interaction --optimize-autoloader --no-suggest --no-progress
 
 script:
-  - phpunit --coverage-text
+  - vendor/bin/phpunit --coverage-text
