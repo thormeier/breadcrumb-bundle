@@ -17,8 +17,9 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('thormeier_breadcrumb');
+        $treeBuilder = new TreeBuilder('thormeier_breadcrumb');
+        $rootNode = method_exists(TreeBuilder::class, 'getRootNode')
+            ? $treeBuilder->getRootNode() : $treeBuilder->root('thormeier_breadcrumb');
 
         $rootNode
             ->children()

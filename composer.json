@@ -1,7 +1,7 @@
 {
     "name": "thormeier/breadcrumb-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony2 bundle for easy setup of breadcrumbs",
+    "description": "Symfony bundle for easy setup of breadcrumbs",
     "license": "MIT",
     "authors": [
         {
@@ -25,11 +25,11 @@
         "phpunit/phpunit": "4.*"
     },
     "suggest": {
-        "twig/twig": "to render breadcrumbs with a twig template"
+        "twig/twig": "To render breadcrumbs with a twig template"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0-dev"
+            "dev-master": "2.2-dev"
         }
     }
 }
