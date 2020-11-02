@@ -1,0 +1,30 @@
+acme_demo_home:
+  path: /
+  controller: Thormeier\BreadcrumbBundle\Tests\Functional\Controller\BreadcrumbController::breadcrumbAction
+  options:
+    breadcrumb:
+      label: Home
+
+acme_demo_contact:
+  path: /contact
+  controller: Thormeier\BreadcrumbBundle\Tests\Functional\Controller\BreadcrumbController::breadcrumbAction
+  options:
+    breadcrumb:
+      label: Contact
+      parent_route: acme_demo_home
+
+acme_demo_catalogue:
+  path: /catalogue
+  controller: Thormeier\BreadcrumbBundle\Tests\Functional\Controller\BreadcrumbController::breadcrumbAction
+  options:
+    breadcrumb:
+      label: 'Our Catalogue'
+      parent_route: acme_demo_home
+
+acme_demo_catalogue_categories:
+  path: /catalogue/categories
+  controller: Thormeier\BreadcrumbBundle\Tests\Functional\Controller\BreadcrumbController::breadcrumbAction
+  options:
+    breadcrumb:
+      label: 'All categories'
+      parent_route: acme_demo_catalogue

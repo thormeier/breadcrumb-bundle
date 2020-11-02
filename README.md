@@ -6,9 +6,9 @@ BreadcrumbBundle
 ## Introduction
 
 This Symfony bundle provides integration of breadcrumbs via route config and rendering in your Twig templates.
-This bundle is heavily inspired by the inactive https://github.com/xi-project/xi-bundle-breadcrumbs
+This bundle is heavily inspired by the inactive [https://github.com/xi-project/xi-bundle-breadcrumbs](https://github.com/xi-project/xi-bundle-breadcrumbs)
 
-## Installation
+## Installation / Getting started
 
 ### Step 1: Composer require
 
@@ -35,7 +35,7 @@ Enable the bundle in your config.yml:
     # config.yml
     thormeier_breadcrumb: ~
 
-The template defaults to a very basic one, providing a `<ul>` with `<li>` and `<a>` for every breadcrumb.
+The template defaults to a basic one, providing a `<ul>` with `<li>` and `<a>` for every breadcrumb.
 
 ## Usage
 
@@ -259,3 +259,15 @@ a `BreadcrumbCollection` on demand.
 
 A slideshow presenting the bundle and explaining some concepts a little further is available on slideshare: 
 [http://www.slideshare.net/Thormeier/thormeierbreadcrumbbundle](http://www.slideshare.net/Thormeier/thormeierbreadcrumbbundle)
+
+## Development
+
+To execute tests locally, execute the following command:
+
+```
+./vendor/bin/phpunit
+```
+
+The folder `coverage/` is ignored by git, it can therefore be used for generating coverage reports with `phpunit --coverage-html ./coverage/`.
+
+If you want to contribute to this project, please feel free to open up issues and/or pull requests!

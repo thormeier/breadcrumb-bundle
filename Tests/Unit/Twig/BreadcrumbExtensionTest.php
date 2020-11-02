@@ -1,6 +1,6 @@
 <?php
 
-namespace Thormeier\BreadcrumbBundle\Tests\Twig;
+namespace Thormeier\BreadcrumbBundle\Tests\Unit\Twig;
 
 use Thormeier\BreadcrumbBundle\Model\BreadcrumbCollection;
 use Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider;
