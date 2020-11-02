@@ -1,6 +1,6 @@
 <?php
 
-namespace Thormeier\BreadcrumbBundle\Tests\Model;
+namespace Thormeier\BreadcrumbBundle\Tests\Unit\Model;
 
 use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
 use Thormeier\BreadcrumbBundle\Model\BreadcrumbCollection;
@@ -99,6 +99,8 @@ class BreadcrumbCollectionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($breadcrumbB, $collection->getBreadcrumbByRoute('baz'));
         $this->assertEquals($breadcrumbA, $collection->getBreadcrumbByRoute('bar'));
+        $this->assertEquals($breadcrumbC, $collection->getBreadcrumbByRoute('qux'));
+        $this->assertEquals(null, $collection->getBreadcrumbByRoute('xyzzy'));
     }
 
     /**
@@ -114,5 +116,20 @@ class BreadcrumbCollectionTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\InvalidArgumentException');
 
         $collection->addBreadcrumbAfterCrumb($breadcrumbA, $breadcrumbB);
+    }
+
+    /**
+     * Test throwing of exception if a breadcrumb doesn't exist
+     */
+    public function testAddBeforeBreadcrumbExceptionException()
+    {
+        $breadcrumbA = new Breadcrumb('foo', 'bar');
+        $breadcrumbB = new Breadcrumb('bar', 'baz');
+
+        $collection = new BreadcrumbCollection();
+
+        $this->setExpectedException('\InvalidArgumentException');
+
+        $collection->addBreadcrumbBeforeCrumb($breadcrumbA, $breadcrumbB);
     }
 }

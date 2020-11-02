@@ -1,6 +1,6 @@
 <?php
 
-namespace Thormeier\BreadcrumbBundle\Tests\Routing;
+namespace Thormeier\BreadcrumbBundle\Tests\Unit\Routing;
 
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -29,7 +29,7 @@ class BreadcrumbAttachLoaderTest extends \PHPUnit_Framework_TestCase
     {
         /** @var \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\Config\Loader\LoaderInterface $delegatingLoader */
         $delegatingLoader = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderInterface')
-            ->setMethods(array('load'))
+            ->setMethods(array('load', 'supports'))
             ->getMockForAbstractClass();
 
         $this->delegatingLoader = $delegatingLoader;
@@ -138,5 +138,22 @@ class BreadcrumbAttachLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('\LogicException');
         $this->loader->load('foobar');
+    }
+
+    /**
+     * Tests passing of supports call to internal router loader.
+     */
+    public function testSupports()
+    {
+        $resource = 'foo';
+        $type = 'bar';
+        $result = 'baz';
+
+        $this->delegatingLoader->expects($this->once())
+            ->method('supports')
+            ->with($resource, $type)
+            ->will($this->returnValue($result));
+
+        $this->assertEquals($result, $this->loader->supports($resource, $type));
     }
 }

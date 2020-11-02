@@ -19,8 +19,14 @@ class RoutingLoaderCompilerPass implements CompilerPassInterface
     {
         $routingLoaderDefinition = $container->getDefinition('routing.loader');
 
-        $container->setDefinition('thormeier_breadcrumb.routing.attach_breadcrumb_loader.inner', $routingLoaderDefinition);
+        $container->setDefinition(
+            'thormeier_breadcrumb.routing.attach_breadcrumb_loader.inner',
+            $routingLoaderDefinition
+        );
 
-        $container->setAlias('routing.loader', 'thormeier_breadcrumb.routing.attach_breadcrumb_loader')->setPublic(true);
+        $container->setAlias(
+            'routing.loader',
+            'thormeier_breadcrumb.routing.attach_breadcrumb_loader'
+        )->setPublic(true);
     }
 }

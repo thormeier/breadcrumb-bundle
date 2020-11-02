@@ -13,15 +13,16 @@
     "autoload": {
         "psr-4": { "Thormeier\\BreadcrumbBundle\\": "" },
         "exclude-from-classmap": [
-            "/Tests/"
+            "/Tests/Unit/"
         ]
     },
     "require": {
-        "php": ">=5.3.3",
-        "symfony/framework-bundle": "2.3.*|^2.6.0|^3.0|^4.0"
+        "php": ">=5.5",
+        "symfony/framework-bundle": "2.3.*|^2.6.0|^3.0|^4.0|^5.0"
     },
     "require-dev": {
         "twig/twig": "^1.15|^2.0",
+        "symfony/twig-bundle": "^4.0|^5.0",
         "phpunit/phpunit": "4.*"
     },
     "suggest": {
