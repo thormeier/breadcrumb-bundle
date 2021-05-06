@@ -18,7 +18,7 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/framework-bundle": "2.3.*|^2.6.0|^3.0|^4.0"
+        "symfony/framework-bundle": ">=2.3"
     },
     "require-dev": {
         "twig/twig": "^1.15|^2.0",
