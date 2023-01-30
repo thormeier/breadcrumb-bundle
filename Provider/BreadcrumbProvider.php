@@ -2,11 +2,11 @@
 
 namespace Thormeier\BreadcrumbBundle\Provider;
 
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Thormeier\BreadcrumbBundle\Model\Breadcrumb;
 use Thormeier\BreadcrumbBundle\Model\BreadcrumbCollectionInterface;
 use Thormeier\BreadcrumbBundle\Model\BreadcrumbInterface;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 /**
  * Breadcrumb factory class that is used to generate and alter breadcrumbs and inject them where needed
@@ -48,10 +48,28 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
      *
      * @param GetResponseEvent $event
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
+
         if ($event->getRequestType() === HttpKernelInterface::MASTER_REQUEST) {
-            $this->requestBreadcrumbConfig = $event->getRequest()->attributes->get('_breadcrumbs', array());
+
+            $route = $event->getRequest()->attributes->get('_route');
+            $routeParams = $event->getRequest()->attributes->get('_route_params', array());
+            $breadCrumbs =  $event->getRequest()->attributes->get('_breadcrumbs', array());
+
+            //if key exists, then replace label
+            foreach($breadCrumbs as $key => $breadCrumb){
+
+                if($breadCrumb['route'] == $route) {
+
+                    if (array_key_exists($breadCrumb['label'], $routeParams)) {
+
+                        $breadCrumbs[$key]['label'] = $routeParams[$breadCrumb['label']];
+                    }
+                }
+            }
+
+            $this->requestBreadcrumbConfig = $breadCrumbs;
         }
     }
 
@@ -96,6 +114,7 @@ class BreadcrumbProvider implements BreadcrumbProviderInterface
 
         if (null !== $this->requestBreadcrumbConfig) {
             foreach ($this->requestBreadcrumbConfig as $rawCrumb) {
+
                 $collection->addBreadcrumb(new $model(
                     $rawCrumb['label'], $rawCrumb['route']
                 ));

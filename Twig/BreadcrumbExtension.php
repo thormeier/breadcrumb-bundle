@@ -3,9 +3,12 @@
 namespace Thormeier\BreadcrumbBundle\Twig;
 
 use Thormeier\BreadcrumbBundle\Provider\BreadcrumbProviderInterface;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
+use Twig\TwigFunction;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
 
 /**
  * Twig extension for breadcrumbs: Render a given template
@@ -57,6 +60,10 @@ class BreadcrumbExtension extends AbstractExtension
      * @param Environment $twigEnvironment
      *
      * @return string
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function renderBreadcrumbs(Environment $twigEnvironment)
     {

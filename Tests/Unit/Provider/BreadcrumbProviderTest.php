@@ -1,8 +1,9 @@
 <?php
 
-namespace Thormeier\BreadcrumbBundle\Tests\Provider;
+namespace Thormeier\BreadcrumbBundle\Tests\Unit\Provider;
 
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Thormeier\BreadcrumbBundle\Provider\BreadcrumbProvider;
@@ -41,9 +42,7 @@ class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
             ->setMethods(array('get'))
             ->getMock();
 
-        $request = $this->getMockBuilder('\Symfony\Component\HttpFoundation\Request')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $request = Request::create('/');
         $request->attributes = $this->requestAttributes;
 
         $this->responseEvent = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
@@ -135,5 +134,74 @@ class BreadcrumbProviderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($label2, $result->getAll()[1]->getLabel());
         $this->assertEquals($route2, $result->getAll()[1]->getRoute());
+    }
+
+    /**
+     * Tests that the breadcrumbs can be gotten multiple times without changing.
+     */
+    public function testMultipleGetBreadcrumbs()
+    {
+        $label1 = 'foo';
+        $route1 = 'bar';
+        $label2 = 'baz';
+        $route2 = 'qux';
+
+        $this->requestAttributes->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue(array(
+                array(
+                    'label' => $label1,
+                    'route' => $route1,
+                ),
+                array(
+                    'label' => $label2,
+                    'route' => $route2,
+                ),
+            )));
+
+        $this->provider->onKernelRequest($this->responseEvent);
+        $resultFirst = $this->provider->getBreadcrumbs();
+        $resultSecond = $this->provider->getBreadcrumbs();
+        $resultThird = $this->provider->getBreadcrumbs();
+
+        // Transitivity ensures that $resultFirst === $resultThird
+        $this->assertEquals($resultFirst, $resultSecond);
+        $this->assertEquals($resultSecond, $resultThird);
+    }
+
+    /**
+     * Tests that the convenience method is passed to the collection.
+     */
+    public function testGetBreadcrumbByRoute()
+    {
+        $label1 = 'foo';
+        $route1 = 'bar';
+        $label2 = 'baz';
+        $route2 = 'qux';
+
+        $this->requestAttributes->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue(array(
+                array(
+                    'label' => $label1,
+                    'route' => $route1,
+                ),
+                array(
+                    'label' => $label2,
+                    'route' => $route2,
+                ),
+            )));
+
+        $this->provider->onKernelRequest($this->responseEvent);
+
+        // Test result that doesn't exist
+        $this->assertNull($this->provider->getBreadcrumbByRoute('doesnt exist'));
+
+        // Test existing result.
+        $existing = $this->provider->getBreadcrumbByRoute($route1);
+        $this->assertNotNull($existing);
+        $this->assertInstanceOf(self::MODEL_CLASS, $existing);
+        $this->assertEquals($label1, $existing->getLabel());
+        $this->assertEquals($route1, $existing->getRoute());
     }
 }
